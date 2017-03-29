@@ -1,1 +1,1 @@
-require "ffi/library"
+require "fiddler"

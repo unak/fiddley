@@ -1,6 +1,6 @@
 require "fiddle/import"
 
-module FFI
+module Fiddler
   module Library
     include Fiddle::Importer
     alias ffi_lib dlload
@@ -9,26 +9,13 @@ module FFI
       @convention = nil
     end
 
-    def map_type(type)
-      case type
-      when :string, :pointer
-        "void *"
-      when :long_long
-        "long long"
-      when :ulong_long
-        "unsigned long long"
-      else
-        type.to_s
-      end
-    end
-
-    def attach_function(rname, cname, params, ret = nil)
+    def attach_function(rname, cname, params, ret = nil, blocking: false)
       if ret.nil?
         ret = params
         params = cname
         cname = rname
       end
-      extern "#{map_type(ret)} #{cname}(#{params.map{|e| map_type(e)}.join(', ')})", @convention
+      extern "#{Fiddler.type2str(ret)} #{cname}(#{params.map{|e| Fiddler.type2str(e)}.join(', ')})", @convention
       if cname != rname
         instance_eval <<-end
           alias #{rname.inspect} #{cname.inspect}

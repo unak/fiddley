@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "FFI compatible interface for Fiddle"
   spec.description   = "Use Fiddle instead of Ruby-FFI !!!"
   spec.homepage      = "https://github.com/unak/fiddler"
-  spec.license       = "MIT"
+  spec.license       = "BSD-2-Clause"
 
   spec.files         = `git ls-files -z`.split("\x0").reject {|f| f.match(%r{^tmp/|^tools/|^examples/|^\.}) }
   spec.bindir        = "bin"

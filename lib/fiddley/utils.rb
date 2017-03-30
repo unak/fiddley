@@ -12,54 +12,102 @@ module Fiddley
   end
 
   module Utils
+    # assumes short = 16bit, int = 32bit, long long = 64bit
+    LONG_SIZE = [0].pack('l!').bytesize
+    POINTER_SIZE = [nil].pack('p').bytesize
+    SIZET_FORMAT = POINTER_SIZE == LONG_SIZE ? 'l!' : 'q'
+    SIZET_TYPE = POINTER_SIZE == LONG_SIZE ? 'unsigned long' : 'unsigned long long'
+
     module_function def type2size(type)
       case type
       when :char, :uchar, :int8, :uint8
         1
       when :short, :ushort, :int16, :uint16
         2
-      when :int, :uint, :int32, :uint32
+      when :int, :uint, :int32, :uint32, :bool
         4
-      when :long, :ulong, :int64, :uint64
+      when :long, :ulong
+        LONG_SIZE
+      when :int64, :uint64, :long_long, :ulong_long
         8
-      when :string, :pointer
-        8
+      when :string, :pointer, :size_t
+        POINTER_SIZE
       else
-        raise TypeError, "unknown type #{type}"
+        raise ArgumentError, "unknown type #{type}"
       end
     end
 
     module_function def str2value(type, str)
       case type
-      when :char, :uchar, :int8, :uint8
+      when :char, :int8
         str.unpack1('c')
-      when :short, :ushort, :int16, :uint16
+      when :uchar, :uint8
+        str.unpack1('C')
+      when :short, :int16
         str.unpack1('s')
-      when :int, :uint, :int32, :uint32
+      when :ushort, :uint16
+        str.unpack1('S')
+      when :int32
         str.unpack1('l')
-      when :long, :ulong, :int64, :uint64
+      when :uint32
+        str.unpack1('L')
+      when :int
+        str.unpack1('i!')
+      when :uint
+        str.unpack1('I!')
+      when :bool
+        str.unpack1('i!') != 0
+      when :long
+        str.unpack1('l!')
+      when :ulong
+        str.unpack1('L!')
+      when :long_long, :int64
+        str.unpack1('q')
+      when :ulong_long, :uint64
         str.unpack1('Q')
       when :string, :pointer
         str.unpack1('p')
+      when :size_t
+        str.unpack1(SIZET_FORMAT)
       else
-        raise TypeError, "unknown type #{type}"
+        raise ArgumentError, "unknown type #{type}"
       end
     end
 
     module_function def value2str(type, value)
       case type
-      when :char, :uchar, :int8, :uint8
+      when :char, :int8
         [value].pack('c')
-      when :short, :ushort, :int16, :uint16
+      when :uchar, :uint8
+        [value].pack('C')
+      when :short, :int16
         [value].pack('s')
-      when :int, :uint, :int32, :uint32
+      when :ushort, :uint16
+        [value].pack('S')
+      when :int32
         [value].pack('l')
-      when :long, :ulong, :int64, :uint64
+      when :uint32
+        [value].pack('L')
+      when :int
+        [value].pack('i!')
+      when :uint
+        [value].pack('I!')
+      when :bool
+        [value ? 1 : 0].pack('i!')
+      when :long
+        [value].pack('l!')
+      when :ulong
+        [value].pack('L!')
+      when :long_long, :int64
+        [value].pack('q')
+      when :ulong_long, :uint64
         [value].pack('Q')
       when :string, :pointer
         [value].pack('p')
+      when :size_t
+        [value].pack(SIZET_FORMAT)
       else
-        raise TypeError, "unknown type #{type}"
+        raise ArgumentError, "unknown type #{type}"
       end
     end
 
@@ -77,16 +125,18 @@ module Fiddley
         "int"
       when :uint, :uint32
         "unsigned int"
-      when :long, :int64
+      when :long
         "long"
-      when :ulong, :uint64
+      when :ulong
         "unsigned long"
-      when :long_long
+      when :long_long, :int64
         "long long"
-      when :ulong_long
+      when :ulong_long, :uint64
         "unsigned long long"
       when :string, :pointer
         "void *"
+      when :size_t
+        SIZET_TYPE
       else
         type.to_s
       end

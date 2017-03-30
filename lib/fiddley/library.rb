@@ -5,10 +5,15 @@ module Fiddley
   module Library
     include Fiddley::Utils
     include Fiddle::Importer
+
     alias ffi_lib dlload
 
     def extended(mod)
       @convention = nil
+    end
+
+    def ffi_convention(conv)
+      @convention = conv
     end
 
     def attach_function(rname, cname, params, ret = nil, blocking: false)
@@ -19,11 +24,12 @@ module Fiddley
       end
       extern "#{type2str(ret)} #{cname}(#{params.map{|e| type2str(e)}.join(', ')})", @convention
       if ret == :string
+        tname = (cname.to_s + '+').to_sym
         instance_eval <<-end
-          alias #{cname.inspect.sub(/^:"?(.*)"?$/, ':"\\1+"')} #{cname.inspect}
-          define_singleton_method(#{cname.inspect}){|#{params.map.with_index{|_,i|"x#{i}"}.join(',')}|
-            __send__(#{cname.inspect.sub(/^:"?(.*)"?$/, ':"\\1+"')}, #{params.map.with_index{|_,i|"x#{i}"}.join(',')}).to_s
-          }
+          alias #{tname.inspect} #{cname.inspect}
+        end
+        define_singleton_method(cname) do |*args|
+          __send__(tname, *args).to_s
         end
       end
       if cname != rname
@@ -31,10 +37,6 @@ module Fiddley
           alias #{rname.inspect} #{cname.inspect}
         end
       end
-    end
-
-    def ffi_convention(conv)
-      @convention = conv
     end
 
     case RUBY_PLATFORM
@@ -93,12 +95,10 @@ module Fiddley
     libm_so = nil if !libm_so || (libm_so[0] == ?/ && !File.file?(libm_so))
 
     if !libc_so || !libm_so
-      ruby = EnvUtil.rubybin
-      ldd = `ldd #{ruby}`
-      #puts ldd
+      require "rbconfig"
+      ldd = `ldd #{RbConfig.ruby}`
       libc_so = $& if !libc_so && %r{/\S*/libc\.so\S*} =~ ldd
       libm_so = $& if !libm_so && %r{/\S*/libm\.so\S*} =~ ldd
-      #p [libc_so, libm_so]
     end
 
     LIBC = libc_so

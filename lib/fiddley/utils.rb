@@ -1,4 +1,16 @@
 module Fiddley
+  unless "".respond_to?(:unpack1)
+    module RefineStringUnpack1
+      refine String do
+        def unpack1(arg)
+          unpack(arg).first
+        end
+      end
+    end
+
+    using RefineStringUnpack1
+  end
+
   def self.type2size(type)
     case type
     when :char, :uchar, :int8, :uint8

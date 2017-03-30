@@ -1,7 +1,12 @@
 require "fiddle/import"
+require "fiddley/utils"
 
 module Fiddley
   class MemoryPointer
+    if defined?(Fiddley::RefineStringUnpack1)
+      using Fiddley::RefineStringUnpack1
+    end
+
     def initialize(type, num = 1)
       size = Fiddley.type2size(type) * num
       @ptr = Fiddle::Pointer.malloc(size)

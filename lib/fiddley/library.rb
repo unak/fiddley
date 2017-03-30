@@ -18,6 +18,14 @@ module Fiddley
         cname = rname
       end
       extern "#{type2str(ret)} #{cname}(#{params.map{|e| type2str(e)}.join(', ')})", @convention
+      if ret == :string
+        instance_eval <<-end
+          alias #{cname.inspect.sub(/^:"?(.*)"?$/, ':"\\1+"')} #{cname.inspect}
+          define_singleton_method(#{cname.inspect}){|#{params.map.with_index{|_,i|"x#{i}"}.join(',')}|
+            __send__(#{cname.inspect.sub(/^:"?(.*)"?$/, ':"\\1+"')}, #{params.map.with_index{|_,i|"x#{i}"}.join(',')}).to_s
+          }
+        end
+      end
       if cname != rname
         instance_eval <<-end
           alias #{rname.inspect} #{cname.inspect}

@@ -1,1 +1,3 @@
 require "fiddley"
+
+FFI = Fiddley

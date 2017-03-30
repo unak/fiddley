@@ -1,13 +1,17 @@
 require "fiddle/import"
+require "fiddley/utils"
 
 module Fiddley
   class Struct
+    include Fiddley::Utils
+    extend Fiddley::Utils
+
     def self.layout(*args)
       @members = {}
       @size = 0
       args.each_slice(2) do |name, type|
         @members[name] = [type, @size]
-        @size += Fiddley.type2size(type)
+        @size += type2size(type)
       end
     end
 
@@ -36,13 +40,13 @@ module Fiddley
     def [](key)
       raise IndexError, "#{key} is not defined" unless self.class.members.has_key?(key)
       type, offset = self.class.members[key]
-      Fiddley.str2value(type, @ptr[offset, Fiddley.type2size(type)])
+      str2value(type, @ptr[offset, type2size(type)])
     end
 
     def []=(key, value)
       raise IndexError, "#{key} is not defined" unless self.class.members.has_key?(key)
       type, offset = self.class.members[key]
-      @ptr[offset, Fiddley.type2size(type)] = Fiddley.value2str(type, value)
+      @ptr[offset, type2size(type)] = value2str(type, value)
     end
 
     def to_ptr

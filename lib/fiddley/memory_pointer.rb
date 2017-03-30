@@ -6,9 +6,10 @@ module Fiddley
     if defined?(Fiddley::RefineStringUnpack1)
       using Fiddley::RefineStringUnpack1
     end
+    include Fiddley::Utils
 
     def initialize(type, num = 1)
-      size = Fiddley.type2size(type) * num
+      size = type2size(type) * num
       @ptr = Fiddle::Pointer.malloc(size)
     end
 

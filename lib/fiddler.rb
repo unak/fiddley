@@ -1,11 +1,11 @@
-module Fiddler
+module Fiddley
   VERSION = "0.0.1"
 end
 
-FFI = Fiddler
+FFI = Fiddley
 
-require "fiddler/function"
-require "fiddler/memory_pointer"
-require "fiddler/library"
-require "fiddler/struct"
-require "fiddler/utils"
+require "fiddley/function"
+require "fiddley/memory_pointer"
+require "fiddley/library"
+require "fiddley/struct"
+require "fiddley/utils"

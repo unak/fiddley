@@ -1,4 +1,4 @@
-module Fiddler
+module Fiddley
   def self.type2size(type)
     case type
     when :char, :uchar, :int8, :uint8

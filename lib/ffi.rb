@@ -1,1 +1,1 @@
-require "fiddler"
+require "fiddley"

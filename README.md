@@ -1,4 +1,4 @@
-Fiddler
+Fiddley
 =======
 
 Ruby-FFI compatible API layer for Fiddle.

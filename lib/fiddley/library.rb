@@ -1,6 +1,6 @@
 require "fiddle/import"
 
-module Fiddler
+module Fiddley
   module Library
     include Fiddle::Importer
     alias ffi_lib dlload
@@ -15,7 +15,7 @@ module Fiddler
         params = cname
         cname = rname
       end
-      extern "#{Fiddler.type2str(ret)} #{cname}(#{params.map{|e| Fiddler.type2str(e)}.join(', ')})", @convention
+      extern "#{Fiddley.type2str(ret)} #{cname}(#{params.map{|e| Fiddley.type2str(e)}.join(', ')})", @convention
       if cname != rname
         instance_eval <<-end
           alias #{rname.inspect} #{cname.inspect}

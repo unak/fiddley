@@ -1,9 +1,9 @@
 require "fiddle/import"
 
-module Fiddler
+module Fiddley
   class MemoryPointer
     def initialize(type, num = 1)
-      size = Fiddler.type2size(type) * num
+      size = Fiddley.type2size(type) * num
       @ptr = Fiddle::Pointer.malloc(size)
     end
 

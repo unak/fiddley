@@ -6,7 +6,17 @@ module Fiddley
     include Fiddley::Utils
     include Fiddle::Importer
 
-    alias ffi_lib dlload
+    def ffi_lib(so)
+      begin
+        dlload so
+      rescue Fiddle::DLError
+        begin
+          dlload LIBPREFIX + so
+        rescue Fiddle::DLError
+          dlload LIBPREFIX + so + "." + LIBSUFFIX
+        end
+      end
+    end
 
     def extended(mod)
       @convention = nil
@@ -41,6 +51,8 @@ module Fiddley
 
     case RUBY_PLATFORM
     when /cygwin/
+      libprefix = "cyg"
+      libsuffix = "dll"
       libc_so = "cygwin1.dll"
       libm_so = "cygwin1.dll"
     when /linux/
@@ -56,10 +68,13 @@ module Fiddley
       libc_so = File.join(libdir, "libc.so.6")
       libm_so = File.join(libdir, "libm.so.6")
     when /mingw/, /mswin/
+      libprefix = ""
+      libsuffix = "dll"
       require "rbconfig"
       crtname = RbConfig::CONFIG["RUBY_SO_NAME"][/msvc\w+/] || 'ucrtbase'
       libc_so = libm_so = "#{crtname}.dll"
     when /darwin/
+      libsuffix = "dylib"
       libc_so = "/usr/lib/libc.dylib"
       libm_so = "/usr/lib/libm.dylib"
     when /kfreebsd/
@@ -101,6 +116,8 @@ module Fiddley
       libm_so = $& if !libm_so && %r{/\S*/libm\.so\S*} =~ ldd
     end
 
+    LIBPREFIX = libprefix || "lib"
+    LIBSUFFIX = libsuffix || "so"
     LIBC = libc_so
     LIBM = libm_so
   end

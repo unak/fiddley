@@ -6,15 +6,27 @@ module Fiddley
     include Fiddley::Utils
     include Fiddle::Importer
 
-    def ffi_lib(so)
-      begin
-        dlload so
-      rescue Fiddle::DLError
-        begin
-          dlload LIBPREFIX + so
-        rescue Fiddle::DLError
-          dlload LIBPREFIX + so + "." + LIBSUFFIX
+    def ffi_lib(*args)
+      args.each do |soes|
+        soes = [soes] unless soes.is_a?(Array)
+        loaded = false
+        soes.each do |so|
+          begin
+            begin
+              dlload so
+            rescue Fiddle::DLError
+              begin
+                dlload LIBPREFIX + so
+              rescue Fiddle::DLError
+                dlload LIBPREFIX + so + "." + LIBSUFFIX
+              end
+            end
+            loaded = true
+            break
+          rescue Fiddle::DLError
+          end
         end
+        raise Fiddle::DLError, "can't load #{soes.join(' or ')}" unless loaded
       end
     end
 

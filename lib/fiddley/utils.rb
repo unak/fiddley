@@ -39,7 +39,7 @@ module Fiddley
       when :string, :pointer
         Fiddle::SIZEOF_VOIDP
       else
-        raise ArgumentError, "unknown type #{type}"
+        raise RuntimeError, "unknown type #{type}"
       end
     end
 
@@ -64,7 +64,7 @@ module Fiddley
       when :string, :pointer
         Fiddle::ALIGN_VOIDP
       else
-        raise ArgumentError, "unknown type #{type}"
+        raise RuntimeError, "unknown type #{type}"
       end
     end
 
@@ -105,7 +105,7 @@ module Fiddley
       when :string, :pointer
         str.unpack1('p')
       else
-        raise ArgumentError, "unknown type #{type}"
+        raise RuntimeError, "unknown type #{type}"
       end
     end
 
@@ -146,7 +146,7 @@ module Fiddley
       when :string, :pointer
         [value].pack('p')
       else
-        raise ArgumentError, "unknown type #{type}"
+        raise RuntimeError, "unknown type #{type}"
       end
     end
 
@@ -218,7 +218,7 @@ module Fiddley
       when :void
         Fiddle::TYPE_VOID
       else
-        raise ArgumentError, "unknown type #{type}"
+        raise RuntimeError, "unknown type #{type}"
       end
     end
   end

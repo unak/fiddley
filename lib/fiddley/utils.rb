@@ -30,7 +30,13 @@ module Fiddley
         Fiddle::SIZEOF_LONG
       when :int64, :uint64, :long_long, :ulong_long
         Fiddle::SIZEOF_LONG_LONG
-      when :string, :pointer, :size_t
+      when :float
+        Fiddle::SIZEOF_FLOAT
+      when :double
+        Fiddle::SIZEOF_DOUBLE
+      when :size_t
+        Fiddle::SIZEOF_SIZE_T
+      when :string, :pointer
         Fiddle::SIZEOF_VOIDP
       else
         raise ArgumentError, "unknown type #{type}"
@@ -65,10 +71,14 @@ module Fiddley
         str.unpack1('q')
       when :ulong_long, :uint64
         str.unpack1('Q')
-      when :string, :pointer
-        str.unpack1('p')
       when :size_t
         str.unpack1(SIZET_FORMAT)
+      when :float
+        str.unpack1('f')
+      when :double
+        str.unpack1('d')
+      when :string, :pointer
+        str.unpack1('p')
       else
         raise ArgumentError, "unknown type #{type}"
       end
@@ -102,10 +112,14 @@ module Fiddley
         [value].pack('q')
       when :ulong_long, :uint64
         [value].pack('Q')
-      when :string, :pointer
-        [value].pack('p')
       when :size_t
         [value].pack(SIZET_FORMAT)
+      when :float
+        [value].pack('f')
+      when :double
+        [value].pack('d')
+      when :string, :pointer
+        [value].pack('p')
       else
         raise ArgumentError, "unknown type #{type}"
       end
@@ -133,10 +147,14 @@ module Fiddley
         "long long"
       when :ulong_long, :uint64
         "unsigned long long"
-      when :string, :pointer
-        "void *"
       when :size_t
         SIZET_TYPE
+      when :float
+        "float"
+      when :double
+        "double"
+      when :string, :pointer
+        "void *"
       else
         type.to_s
       end
@@ -164,10 +182,14 @@ module Fiddley
         Fiddle::TYPE_LONG_LONG
       when :ulong_long, :uint64
         -Fiddle::TYPE_LONG_LONG
-      when :string, :pointer
-        Fiddle::TYPE_VOIDP
+      when :float
+        Fiddle::TYPE_FLOAT
+      when :double
+        Fiddle::TYPE_DOUBLE
       when :size_t
         Fiddle::TYPE_SIZE_T
+      when :string, :pointer
+        Fiddle::TYPE_VOIDP
       when :void
         Fiddle::TYPE_VOID
       else

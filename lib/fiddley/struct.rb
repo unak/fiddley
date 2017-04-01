@@ -11,7 +11,7 @@ module Fiddley
       @size = 0
       args.each_slice(2) do |name, type|
         @members[name] = [type, @size]
-        @size += type2size(type)
+        @size += type2offset_size(type)
       end
     end
 

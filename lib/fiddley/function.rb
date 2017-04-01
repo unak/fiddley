@@ -1,14 +1,12 @@
-require "fiddle/import"
+require "fiddle"
 require "fiddley/utils"
 
 module Fiddley
-  class Function
+  class Function < Fiddle::Closure::BlockCaller
+    include Fiddley::Utils
+
     def initialize(ret, params, blk)
-      Module.new do
-        extend Fiddle::Importer
-        dlload Fiddley::Library::LIBC
-        @@func = bind("#{Fiddley::Utils.type2str(ret)} callback(#{params.map{|e| Fiddley::Utils.type2str(e)}.join(', ')})", &blk)
-      end
+      super(type2type(ret), params.map{|e| type2type(e)}, &blk)
     end
   end
 end

@@ -1,3 +1,5 @@
+require "fiddle"
+
 module Fiddley
   unless "".respond_to?(:unpack1)
     module RefineStringUnpack1
@@ -13,25 +15,23 @@ module Fiddley
 
   module Utils
     # assumes short = 16bit, int = 32bit, long long = 64bit
-    LONG_SIZE = [0].pack('l!').bytesize
-    POINTER_SIZE = [nil].pack('p').bytesize
-    SIZET_FORMAT = POINTER_SIZE == LONG_SIZE ? 'l!' : 'q'
-    SIZET_TYPE = POINTER_SIZE == LONG_SIZE ? 'unsigned long' : 'unsigned long long'
+    SIZET_FORMAT = Fiddle::SIZEOF_VOIDP == Fiddle::SIZEOF_LONG ? 'l!' : 'q'
+    SIZET_TYPE = Fiddle::SIZEOF_VOIDP == Fiddle::SIZEOF_LONG ? 'unsigned long' : 'unsigned long long'
 
     module_function def type2size(type)
       case type
       when :char, :uchar, :int8, :uint8
-        1
+        Fiddle::SIZEOF_CHAR
       when :short, :ushort, :int16, :uint16
-        2
+        Fiddle::SIZEOF_SHORT
       when :int, :uint, :int32, :uint32, :bool
-        4
+        Fiddle::SIZEOF_INT
       when :long, :ulong
-        LONG_SIZE
+        Fiddle::SIZEOF_LONG
       when :int64, :uint64, :long_long, :ulong_long
-        8
+        Fiddle::SIZEOF_LONG_LONG
       when :string, :pointer, :size_t
-        POINTER_SIZE
+        Fiddle::SIZEOF_VOIDP
       else
         raise ArgumentError, "unknown type #{type}"
       end
@@ -139,6 +139,39 @@ module Fiddley
         SIZET_TYPE
       else
         type.to_s
+      end
+    end
+
+    module_function def type2type(type)
+      case type
+      when :char, :int8
+        Fiddle::TYPE_CHAR
+      when :uchar, :uint8
+        -Fiddle::TYPE_CHAR
+      when :short, :int16
+        Fiddle::TYPE_SHORT
+      when :ushort, :uint16
+        -Fiddle::TYPE_SHORT
+      when :int, :int32
+        Fiddle::TYPE_INT
+      when :uint, :uint32
+        -Fiddle::TYPE_INT
+      when :long
+        Fiddle::TYPE_LONG
+      when :ulong
+        -Fiddle::TYPE_LONG
+      when :long_long, :int64
+        Fiddle::TYPE_LONG_LONG
+      when :ulong_long, :uint64
+        -Fiddle::TYPE_LONG_LONG
+      when :string, :pointer
+        Fiddle::TYPE_VOIDP
+      when :size_t
+        Fiddle::TYPE_SIZE_T
+      when :void
+        Fiddle::TYPE_VOID
+      else
+        raise ArgumentError, "unknown type #{type}"
       end
     end
   end

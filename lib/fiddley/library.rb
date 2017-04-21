@@ -1,4 +1,5 @@
 require "fiddle/import"
+require "fiddley/struct"
 require "fiddley/utils"
 
 module Fiddley
@@ -45,19 +46,28 @@ module Fiddley
         cname = rname
       end
       extern "#{type2str(ret)} #{cname}(#{params.map{|e| type2str(e)}.join(', ')})", @convention
-      if ret == :string
-        tname = (cname.to_s + '+').to_sym
-        instance_eval <<-end
-          alias #{tname.inspect} #{cname.inspect}
-        end
-        define_singleton_method(cname) do |*args|
-          __send__(tname, *args).to_s
+      case ret
+      when :string
+        wrap_function(cname, &:to_s)
+      when :pointer
+        wrap_function(cname) do |result|
+          Fiddley::MemoryPointer.new(ret, result)
         end
       end
       if cname != rname
         instance_eval <<-end
           alias #{rname.inspect} #{cname.inspect}
         end
+      end
+    end
+
+    private def wrap_function(cname, &blk)
+      tname = (cname.to_s + '+').to_sym
+      instance_eval <<-end
+        alias #{tname.inspect} #{cname.inspect}
+      end
+      define_singleton_method(cname) do |*args|
+        blk.call(__send__(tname, *args))
       end
     end
 

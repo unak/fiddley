@@ -10,8 +10,13 @@ module Fiddley
     include Fiddley::Utils
 
     def initialize(type, num = 1, clear = true)
-      @size = type2size(type) * num
-      @ptr = Fiddle::Pointer.malloc(@size)
+      if num.is_a?(Fiddle::Pointer)
+        @ptr = num
+        @size = @ptr.size
+      else
+        @size = type2size(type) * num
+        @ptr = Fiddle::Pointer.malloc(@size)
+      end
     end
 
     attr_reader :size

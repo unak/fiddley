@@ -95,8 +95,8 @@ module Fiddley
       end
     end
 
-    def put_bytes(offset, str, idx = 0, len = nil)
-      @ptr[offset, len ? len : str.bytesize - idx] = str[idx, len ? len, -1]
+    def put_bytes(offset, str, idx = 0, len = str.bytesize - idx)
+      @ptr[offset, len] = str[idx, len]
     end
 
     def write_bytes(str, idx = 0, len = nil)

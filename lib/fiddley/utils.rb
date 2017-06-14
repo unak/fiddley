@@ -181,7 +181,11 @@ module Fiddley
       when :string, :pointer
         "void *"
       else
-        type.to_s
+        if @enums && @enums.find{|e| type == e.tag}
+          "int"
+        else
+          type.to_s
+        end
       end
     end
 

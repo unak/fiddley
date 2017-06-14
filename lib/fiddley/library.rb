@@ -1,4 +1,5 @@
 require "fiddle/import"
+require "fiddley/enum"
 require "fiddley/struct"
 require "fiddley/utils"
 
@@ -69,6 +70,34 @@ module Fiddley
       define_singleton_method(cname) do |*args|
         blk.call(__send__(tname, *args))
       end
+    end
+
+    def enum(*args)
+      if args[1].is_a?(Array)
+        tag = args.shift
+      else
+        tag = nil
+      end
+      if args[0].is_a?(Array)
+        args = args[0]
+      end
+      @enums ||= []
+      @enums << Fiddley::Enum.new(args, tag)
+    end
+
+    def enum_value(key)
+      @enums ||= []
+      enum = @enums.find{|enum| enum[key]}
+      if enum
+        enum[key]
+      else
+        nil
+      end
+    end
+
+    def enum_type(key)
+      @enums ||= []
+      @enums.find{|enum| enum.tag == key}
     end
 
     case RUBY_PLATFORM

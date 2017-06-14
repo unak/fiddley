@@ -164,6 +164,8 @@ module Fiddley
         "int"
       when :uint, :uint32
         "unsigned int"
+      when :bool
+        "int"
       when :long
         "long"
       when :ulong
@@ -203,6 +205,8 @@ module Fiddley
         Fiddle::TYPE_INT
       when :uint, :uint32
         -Fiddle::TYPE_INT
+      when :bool
+        Fiddle::TYPE_INT
       when :long
         Fiddle::TYPE_LONG
       when :ulong

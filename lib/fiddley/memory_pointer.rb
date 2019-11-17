@@ -53,7 +53,7 @@ module Fiddley
       end
 
       define_method("get_array_of_int#{bits}") do |offset, num|
-        @ptr[offset, bytes*num].unpack1(form + '*')
+        @ptr[offset, bytes*num].unpack(form + '*')
       end
 
       define_method("read_array_of_int#{bits}") do |num|
@@ -87,7 +87,7 @@ module Fiddley
       end
 
       define_method("get_array_of_uint#{bits}") do |offset, num|
-        @ptr[offset, bytes*num].unpack1(form2 + '*')
+        @ptr[offset, bytes*num].unpack(form2 + '*')
       end
 
       define_method("read_array_of_uint#{bits}") do |num|

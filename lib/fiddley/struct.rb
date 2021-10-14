@@ -34,7 +34,7 @@ module Fiddley
     end
 
     def initialize
-      @ptr = Fiddle::Pointer.malloc(self.class.size)
+      @ptr = Fiddle::Pointer.malloc(self.class.size, RUBY_FREE)
     end
 
     def [](key)

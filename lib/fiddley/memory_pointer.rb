@@ -15,7 +15,7 @@ module Fiddley
         @size = @ptr.size
       else
         @size = type2size(type) * num
-        @ptr = Fiddle::Pointer.malloc(@size)
+        @ptr = Fiddle::Pointer.malloc(@size, RUBY_FREE)
       end
     end
 
